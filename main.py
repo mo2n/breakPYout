@@ -26,6 +26,11 @@ block_green = (86, 174, 87)
 block_blue = (69, 177, 232)
 block_yellow = (255, 255, 0)
 
+#colori del paddle
+paddle_col = (142, 135, 123)
+paddle_outline = (100, 100, 100)
+
+
 class muro(): #wall
     def __init__(self):
         self.larghezza = screen_larghezza // cols
@@ -74,9 +79,43 @@ class muro(): #wall
                     pygame.draw.rect(screen, bg, (blocco[0]), 2)
 
 
+class paddle():
+	def __init__(self):
+		self.reset()
+
+
+	def movimento(self):
+		#reset movement direction
+		self.direzione = 0
+		key = pygame.key.get_pressed()
+		if key[pygame.K_LEFT] and self.rect.left > 0:
+			self.rect.x -= self.velocita
+			self.direzione = -1
+		if key[pygame.K_RIGHT] and self.rect.right < screen_larghezza:
+			self.rect.x += self.velocita
+			self.direzione = 1
+
+	def draw(self):
+		pygame.draw.rect(screen, paddle_col, self.rect)
+		pygame.draw.rect(screen, paddle_outline, self.rect, 3) 
+                # gli outline sono per definire il bordo del paddle spessore 3
+
+
+	def reset(self):
+		#define paddle variables
+		self.altezza = 20
+		self.larghezza = int(screen_larghezza / cols)
+		self.x = int((screen_larghezza / 2) - (self.larghezza / 2))
+		self.y = screen_altezza - (self.altezza * 2)
+		self.velocita = 10
+		self.rect = Rect(self.x, self.y, self.larghezza, self.altezza)
+		self.direzione = 0
+
+
 muro = muro()
 muro.creazione_muro()
 
+player_paddle = paddle()
 
 
 #inizializzazione schermo
@@ -93,8 +132,14 @@ while True:
     #disegna muro
     muro.disegna_muro()
 
+    #paddle
+    player_paddle.draw()
+    player_paddle.movimento()
+
+
     for event in pygame.event.get():
         if event.type == QUIT:
+
             pygame.quit()
             sys.exit()
 
